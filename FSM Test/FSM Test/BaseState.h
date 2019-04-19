@@ -1,12 +1,7 @@
 #pragma once
 
 class BaseState {
-    virtual void handleInput() {
-
-    }
-    
-    virtual void update() {
-
-    }
-
+public:
+    virtual void handleInput(char input); 
+    virtual void update();
 };
