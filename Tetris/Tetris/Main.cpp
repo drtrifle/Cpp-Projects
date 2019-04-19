@@ -3,7 +3,12 @@
 
 #include "pch.h"
 #include <iostream>
+#include <thread>
 #include <Windows.h>
+#include "Tetromino.h"
+#include "Tetromino3x3.h"
+
+using namespace std;
 
 std::wstring tetromino[7];
 int boardWidth = 12;
@@ -47,7 +52,41 @@ int rotate(int px, int py, int r) {
     return 0;
 }
 
+void renderBoard(wchar_t *screen) {
+    for (int x = 0; x < boardWidth; x++)
+        for (int y = 0; y < boardHeight; y++)
+            screen[(y + 2)*screenWidth + (x + 2)] = L" ABCDEFG=#"[pBoard[y*boardWidth + x]];
+}
+
+bool DoesPieceFit(int nTetromino, int nRotation, int nPosX, int nPosY) {
+    // All Field cells >0 are occupied
+    for (int px = 0; px < 4; px++)
+        for (int py = 0; py < 4; py++) {
+            // Get index into piece
+            int pi = rotate(px, py, nRotation);
+
+            // Get index into field
+            int fi = (nPosY + py) * boardWidth + (nPosX + px);
+
+            // Check that test is in bounds. Note out of bounds does
+            // not necessarily mean a fail, as the long vertical piece
+            // can have cells that lie outside the boundary, so we'll
+            // just ignore them
+            if (nPosX + px >= 0 && nPosX + px < boardWidth) {
+                if (nPosY + py >= 0 && nPosY + py < boardHeight) {
+                    // In Bounds so do collision check
+                    if (tetromino[nTetromino][pi] != L'.' && pBoard[fi] != 0)
+                        return false; // fail on first hit
+                }
+            }
+        }
+
+    return true;
+}
+
 int main() {
+    srand((unsigned)time(0));
+
     // Create Screen Buffer
     wchar_t *screen = new wchar_t[screenWidth*screenHeight];
     for (int i = 0; i < screenWidth*screenHeight; i++) screen[i] = L' ';
@@ -59,12 +98,26 @@ int main() {
     createBoard(boardWidth, boardHeight); 
 
     bool gameOver = false;
+    bool bKey[4];
+
+    //Test
+    Tetromino *tetro = new Tetromino3x3();
 
     while (!gameOver) {
-        // Draw Field
-        for (int x = 0; x < boardWidth; x++)
-            for (int y = 0; y < boardHeight; y++)
-                screen[(y + 2)*screenWidth + (x + 2)] = L" ABCDEFG=#"[pBoard[y*boardWidth + x]];
+        // Game Timing 
+        this_thread::sleep_for(50ms);
+
+        // Input
+        for (int k = 0; k < 4; k++)								// R   L   D Z
+            bKey[k] = (0x8000 & GetAsyncKeyState((unsigned char)("\x27\x25\x28Z"[k]))) != 0;
+        // Game Logic
+
+
+
+        // Render
+
+        // Draw Board
+        renderBoard(screen);
 
         // Display Frame
         WriteConsoleOutputCharacter(hConsole, screen, screenWidth * screenHeight, { 0,0 }, &dwBytesWritten);
@@ -72,15 +125,3 @@ int main() {
 
     return 0;
 }
-
-
-// Run program: Ctrl + F5 or Debug > Start Without Debugging menu
-// Debug program: F5 or Debug > Start Debugging menu
-
-// Tips for Getting Started: 
-//   1. Use the Solution Explorer window to add/manage files
-//   2. Use the Team Explorer window to connect to source control
-//   3. Use the Output window to see build output and other messages
-//   4. Use the Error List window to view errors
-//   5. Go to Project > Add New Item to create new code files, or Project > Add Existing Item to add existing code files to the project
-//   6. In the future, to open this project again, go to File > Open > Project and select the .sln file
