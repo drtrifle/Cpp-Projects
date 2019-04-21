@@ -142,6 +142,9 @@ int main() {
     int nSpeed = 20;
     int nSpeedCount = 0;
     bool bForceDown = false;
+    int nPieceCount = 0;
+    int nScore = 0;
+
     vector<int> vLines;
 
     // Main Game Loop
@@ -167,6 +170,11 @@ int main() {
                         if (tetromino[nCurrentPiece][Rotate(px, py, nCurrentRotation)] != L'.')
                             pField[(nCurrentY + py) * nFieldWidth + (nCurrentX + px)] = nCurrentPiece + 1;
 
+                //Increase speed every 10 pieces
+                if (++nPieceCount % 10 == 0 && nSpeed > 10) {
+                    nSpeed--;
+                }
+
                 //Check if any lines created
                 for (int py = 0; py < 4; py++){
                     if (nCurrentY + py < nFieldHeight - 1) {
@@ -183,6 +191,11 @@ int main() {
                     }
                 }
 
+                //Update Score for each piece placed and for each line placed
+                nScore += 25;
+                if (!vLines.empty()){
+                    nScore += (1 << vLines.size()) * 100;
+                }
 
                 //Choose next piece
                 nCurrentPiece = rand() % 7;
@@ -195,6 +208,9 @@ int main() {
             }
             nSpeedCount = 0;
         }
+
+        // Draw Score
+        swprintf_s(&screen[2 * nScreenWidth + nFieldWidth + 6], 16, L"SCORE: %8d", nScore);
 
         // Animate Line Completion
         if (!vLines.empty()) {
@@ -219,5 +235,9 @@ int main() {
         WriteConsoleOutputCharacter(hConsole, screen, nScreenWidth * nScreenHeight, { 0,0 }, &dwBytesWritten);
     }
 
-    
+    // GameOver
+    CloseHandle(hConsole);
+    cout << "Game Over!! Score:" << nScore << endl;
+    system("pause");
+    return 0;
 }
