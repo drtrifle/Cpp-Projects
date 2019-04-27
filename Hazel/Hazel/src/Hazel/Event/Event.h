@@ -2,9 +2,6 @@
 
 #include "Hazel/Core.h"
 
-#include <string>
-#include <functional>
-
 namespace Hazel {
     // Events in Hazel are currently blocking which is displatched and handled immediatelly
 
