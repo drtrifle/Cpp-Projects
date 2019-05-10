@@ -44,7 +44,6 @@ project "Hazel"
 		"%{IncludeDir.GLFW}",
 		"%{IncludeDir.Glad}",
 		"%{IncludeDir.ImGui}"
-
 	}
 
 	links{

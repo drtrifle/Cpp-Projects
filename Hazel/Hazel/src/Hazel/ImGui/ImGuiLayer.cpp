@@ -73,7 +73,70 @@ namespace Hazel {
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
     }
 
+    //Receives events and based on type, send to correct function below 
     void ImGuiLayer::OnEvent(Event & event) {
+        EventDispatcher dispatcher(event);
+        dispatcher.Dispatch<MouseButtonPressedEvent>(HZBIND_EVENT_FN(ImGuiLayer::OnMouseButtonPressedEvent));
+        dispatcher.Dispatch<MouseButtonReleasedEvent>(HZBIND_EVENT_FN(ImGuiLayer::OnMouseButtonReleasedEvent));
+        dispatcher.Dispatch<MouseMovedEvent>(HZBIND_EVENT_FN(ImGuiLayer::OnMouseMovedEvent));
+        dispatcher.Dispatch<MouseScrolledEvent>(HZBIND_EVENT_FN(ImGuiLayer::OnMouseScrolledEvent));
+        dispatcher.Dispatch<KeyPressedEvent>(HZBIND_EVENT_FN(ImGuiLayer::OnKeyPressedEvent));
+        dispatcher.Dispatch<KeyReleasedEvent>(HZBIND_EVENT_FN(ImGuiLayer::OnKeyReleasedEvent));
+        //dispatcher.Dispatch<KeyTypedEvent>(HZBIND_EVENT_FN(ImGuiLayer::OnKeyTypedEvent));
+        dispatcher.Dispatch<WindowResizeEvent>(HZBIND_EVENT_FN(ImGuiLayer::OnWindowResizedEvent));
+
+    }
+
+    bool ImGuiLayer::OnMouseButtonPressedEvent(MouseButtonPressedEvent & e) {
+        ImGuiIO& io = ImGui::GetIO();
+        io.MouseDown[e.GetMouseButton()] = true;
+
+        //Return false so other layers can handle this event too
+        return false;
+    }
+
+    bool ImGuiLayer::OnMouseButtonReleasedEvent(MouseButtonReleasedEvent & e) {
+        ImGuiIO& io = ImGui::GetIO();
+        io.MouseDown[e.GetMouseButton()] = false;
+
+        //Return false so other layers can handle this event too
+        return false;
+    }
+
+    bool ImGuiLayer::OnMouseMovedEvent(MouseMovedEvent & e) {
+        ImGuiIO& io = ImGui::GetIO();
+
+        //Update mouse position
+        io.MousePos = ImVec2(e.GetX(), e.GetY());
+
+        //Return false so other layers can handle this event too
+        return false;
+    }
+
+    bool ImGuiLayer::OnMouseScrolledEvent(MouseScrolledEvent & e) {
+        ImGuiIO& io = ImGui::GetIO();
+
+        //Update scroll position
+        io.MouseWheelH += e.GetXOffset();
+        io.MouseWheel += e.GetYOffset();
+
+        return false;
+    }
+
+    bool ImGuiLayer::OnKeyPressedEvent(KeyPressedEvent & e) {
+        return false;
+    }
+
+    bool ImGuiLayer::OnKeyReleasedEvent(KeyReleasedEvent & e) {
+        return false;
+    }
+
+    //bool ImGuiLayer::OnKeyTypedEvent(KeyTypedEvent & e) {
+    //    return false;
+    //}
+
+    bool ImGuiLayer::OnWindowResizedEvent(WindowResizeEvent & e) {
+        return false;
     }
 
 }
