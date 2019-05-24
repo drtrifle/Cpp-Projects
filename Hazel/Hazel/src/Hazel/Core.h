@@ -10,7 +10,10 @@
     #endif
 #else
     #error  Hazel only Supports Windows!
+#endif
 
+#ifdef HZ_DEBUG
+    #define HZ_ENABLE_ASSERTS
 #endif
 
 #ifdef HZ_ENABLE_ASSERTS
