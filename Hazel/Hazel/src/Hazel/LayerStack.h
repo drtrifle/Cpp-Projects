@@ -21,6 +21,6 @@ namespace Hazel {
         std::vector<Layer*> m_Layers;
 
         //Points to the last Layer in the stack before the overlays
-        std::vector<Layer*>::iterator m_LayerInsert;
+        unsigned int m_LayerInsertIndex = 0;
     };
 }
