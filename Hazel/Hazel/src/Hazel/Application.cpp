@@ -24,6 +24,32 @@ namespace Hazel {
 
         m_ImGuiLayer = new ImGuiLayer();
         PushOverlay(m_ImGuiLayer);
+
+        // Vertex Array
+        glGenVertexArrays(1, &m_VertexArray);
+        glBindVertexArray(m_VertexArray);
+
+        // Vertex Buffer
+        glGenBuffers(1, &m_VertexBuffer);
+        glBindBuffer(GL_ARRAY_BUFFER, m_VertexBuffer);
+
+        float vertices[3 * 3] = {
+            -0.5f, -0.5f, 0.0f,
+             0.5f, -0.5f, 0.0f,
+             0.0f,  0.5f, 0.0f,
+        };
+
+        glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+        
+        glEnableVertexAttribArray(0);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), nullptr);
+
+        // Index Buffer
+        glGenBuffers(1, &m_IndexBuffer);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IndexBuffer);
+
+        unsigned int indices[3]{ 0, 1, 2 };
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
     }
 
     Application::~Application() {
@@ -47,9 +73,13 @@ namespace Hazel {
 
     void Application::Run() {
         while (m_Running) {
-            glClearColor(1, 0, 1, 1);
+            glClearColor(.2f, .2f, .2f, 1);
             glClear(GL_COLOR_BUFFER_BIT);
            
+            //Draw Triangle
+            glBindVertexArray(m_VertexArray);
+            glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, nullptr);
+
             //Go through each layer and update
             for (Layer* layer : m_LayerStack) {
                 layer->OnUpdate();
