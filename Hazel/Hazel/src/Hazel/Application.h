@@ -1,13 +1,15 @@
 #pragma once
 
 #include "Core.h"
-#include "LayerStack.h"
-#include "Events/Event.h"
+
+#include "Window.h"
+#include "Hazel/LayerStack.h"
+#include "Hazel/Events/Event.h"
 #include "Hazel/Events/ApplicationEvent.h"
 
 #include "Hazel/ImGui/ImGuiLayer.h"
 
-#include "Window.h"
+#include "Hazel/Renderer/Shader.h"
 
 namespace Hazel {
    class HAZEL_API Application {
@@ -38,6 +40,7 @@ namespace Hazel {
        unsigned int m_VertexArray, m_VertexBuffer, m_IndexBuffer;
 
        static Application* s_Instance;
+       std::unique_ptr<Shader> m_Shader;
     };
 
    //To be defined in CLIENT
